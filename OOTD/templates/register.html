@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OOTD</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <style type="text/css">
+        *{
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .wrap {
+            width: 1000px;
+            margin: auto;
+        }
+        #mainTitle {
+            text-align: center;
+            margin: 50px;
+        }
+    </style>
+</head>
+<body>
+<script>
+    $(function(){
+    $('#userPw').keyup(function(){
+      $('#chkNotice').html('');
+    });
+
+    $('#userPwChk').keyup(function(){
+
+        if($('#userPw').val() != $('#userPwChk').val()){
+          $('#chkNotice').html('비밀번호 일치하지 않음<br><br>');
+          $('#chkNotice').attr('color', '#f82a2aa3');
+        } else{
+          $('#chkNotice').html('비밀번호 일치함<br><br>');
+          $('#chkNotice').attr('color', '#199894b3');
+        }
+
+    });
+    });
+
+    function test() {
+      var p1 = document.getElementById('userPw').value;
+      var p2 = document.getElementById('userPwChk').value;
+      if( p1 != p2 ) {
+        alert("비밀번호가 일치 하지 않습니다");
+        return false;
+      } else{
+        return true;
+      }
+
+    }
+</script>
+    <div class="wrap">
+        <h1 class="title is-1" id="mainTitle">OOTD</h1>
+        
+        
+    <table>
+        <form action="/registerUser" method="POST">
+            <thead>
+
+            <caption>회원가입</caption>
+
+            </thead>
+            <tbody>
+            <tr>
+               <td>아이디</td>
+                <td><input type="text" name="id" required></td>
+            </tr>
+            <tr>
+               <td>비밀번호</td>
+                <td><input type="password" id="userPw" placeholder="비밀번호"/></td>
+            </tr>
+            <tr>
+               <td>비밀번호 확인</td>
+                <td><input type="password" id="userPwChk" placeholder="비밀번호 확인"/></td>
+            </tr>
+
+            <tr>
+                <td colspan="2"><input type="submit" onclick="return test();" value="가입하기"></td>
+            </tr>
+            </tbody>
+
+
+        </form>
+    </table>
+    <font id="chkNotice" size="2"></font>
+
+    </div>
+</body>
+</html>

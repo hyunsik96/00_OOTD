@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OOTD</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <style type="text/css">
+        *{
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .wrap {
+            width: 1000px;
+            margin: auto;
+        }
+        #mainTitle {
+            text-align: center;
+            margin: 50px;
+        }
+        #addF {
+            width: 500px;
+            margin: auto;
+        }
+        #warning {
+            margin: 20px;
+            color: rgb(233, 145, 145);
+        }
+    </style>
+</head>
+<body>
+<script>
+    window.onload = function() {
+        if(window.location.search=='?code=1'){
+        alert('이미지가 등록되었습니다.')
+        }
+    }
+</script>
+
+    <div class="wrap">
+    <h1 class="title is-1" id="mainTitle">OOTD</h1>
+        <div id="addF">
+            <form action="/addC.hs" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="userId" value="userId">
+                이미지 선택 : &nbsp;&nbsp;&nbsp;<input class="button is-dark" type="file" name="file" accept=".jpg,.bmp,.jpeg,.png" required><br><br>
+                이미지 종류 : &nbsp;&nbsp;&nbsp;<div class="select is-link">
+                    <select name="cate">
+                        <option value="top">TOP</option>
+                        <option value="bottom">BOTTOM</option>
+                        <option value="shoes">SHOES</option>
+                        <option value="outer">OUTER</option>
+                        <option value="face">FACE</option>
+                    </select>
+                </div>
+                <br>
+                <div id="warning">* 이미지 파일만 업로드 가능하며 FACE 이미지는 한장만 유지됩니다.</div>
+                <input class="button is-dark" style="margin-left: 220px;" type="submit">
+            </form>
+        </div>
+    </div>
+<script>
+    jQuery.browser = {};
+		(function () {
+		    jQuery.browser.msie = false;
+		    jQuery.browser.version = 0;
+		    if (navigator.userAgent.match(/MSIE ([0-9]+)\./)) {
+		        jQuery.browser.msie = true;
+		        jQuery.browser.version = RegExp.$1;
+		    }
+		})();
+    $(document).on("change", "input[type='file']", function(){
+    var file_path = $(this).val();
+    var reg = /(.*?)\.(jpg|bmp|jpeg|png)$/;
+
+    // 허용되지 않은 확장자일 경우
+    if (file_path != "" && (file_path.match(reg) == null || reg.test(file_path) == false)) {
+        if ($.browser.msie) { // ie 일때 
+            $(this).replaceWith($(this).clone(true));
+        } else {
+            $(this).val("");
+        }
+        alert("이미지 파일만 업로드 가능합니다.");
+    }
+    });
+</script>
+</body>
+</html>
