@@ -13,29 +13,21 @@
         *{
             font-family: 'Noto Sans KR', sans-serif;
         }
-
         .wrap {
             width: 1000px;
             margin: auto;
         }
+        #mainTitle {
+            text-align: center;
+            margin: 50px;
+        }
     </style>
 </head>
 <body>
-<script>
-    $(function(){
-        if('{{msg}}'!=''){
-            alert('{{msg}}')
-        }
-    })
-</script>
     <div class="wrap">
-        <h1 class="title is-1">OOTD</h1>
-        <form method="post" action="/login.hs">
-        id : <input type="text" name="id">
-        pw : <input type="password" name="pw">
-        <input type="submit">
-        </form>
-        <button onClick="location.href='/register'">회원가입</button>
+        <h1 class="title is-1" id="mainTitle">OOTD</h1>
     </div>
+    {{loginUser}}
+    
 </body>
 </html>

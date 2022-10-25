@@ -42,6 +42,9 @@
         }
 
     });
+    if('{{msg}}'!=''){
+        alert('{{msg}}');
+    }
     });
 
     function test() {
@@ -74,11 +77,11 @@
             </tr>
             <tr>
                <td>비밀번호</td>
-                <td><input type="password" id="userPw" placeholder="비밀번호"/></td>
+                <td><input type="password" id="userPw" name="pw" required></td>
             </tr>
             <tr>
                <td>비밀번호 확인</td>
-                <td><input type="password" id="userPwChk" placeholder="비밀번호 확인"/></td>
+                <td><input type="password" id="userPwChk" required></td>
             </tr>
 
             <tr>

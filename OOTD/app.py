@@ -23,9 +23,9 @@ def home():
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         return render_template('index.html', loginUser=payload['id'])
     except jwt.ExpiredSignatureError:
-        return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
+        return render_template('index.html')
     except jwt.exceptions.DecodeError:
-        return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
+        return render_template('index.html')
 
 @app.route('/register')
 def registerPage():
@@ -34,25 +34,44 @@ def registerPage():
 @app.route('/registerUser', methods = ['POST'])
 def registerUser():
 
-    
-
-    return render_template('add.html')
+    id = request.form['id']
+    pw = request.form['pw']
+    if(db.user.find_one({'id': id}) is not None):
+        return render_template('register.html', msg="중복된 아이디가 있습니다.")
+    else:
+        db.user.insert_one({'id': id, 'pw': pw})
+        return render_template('index.html', msg='회원가입 성공!')
 
 @app.route('/login.hs', methods = ['POST'])
 def login():
 
     user_id = request.form['id']
     user_pw = request.form['pw']
-    payload = {
-    'id': user_id,
-    'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=3600)    #언제까지 유효한지
-    }
 
-    access_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-    resp = make_response(render_template('index.html'))
-    resp.set_cookie(key='jwToken', value=access_token, max_age=3600)
-    
-    return resp
+    if(db.user.find_one({'id': user_id}) is not None):
+        if(db.user.find_one({'id': user_id})['pw']==user_pw):
+            payload = {
+            'id': user_id,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=3600)    #언제까지 유효한지
+            }
+
+            access_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+            resp = make_response(redirect(url_for('mainOotd')))
+            resp.set_cookie(key='jwToken', value=access_token, max_age=3600)
+            
+            return resp
+    return render_template('index.html', msg='회원정보 조회 실패!')
+
+@app.route('/main.hs')
+def mainOotd():
+    token_receive = request.cookies.get('jwToken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        return render_template('main.html', loginUser=payload['id'])
+    except jwt.ExpiredSignatureError:
+        return render_template('main.html')
+    except jwt.exceptions.DecodeError:
+        return render_template('main.html')
 
 @app.route('/add.hs')
 def addPage():
