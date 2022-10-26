@@ -67,7 +67,14 @@ def mainOotd():
     token_receive = request.cookies.get('jwToken')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        return render_template('main.html', loginUser=payload['id'])
+        userId = payload['id']
+        topList = db.ootd.find({'id': userId, 'cate': 'top'})
+        bottomList = db.ootd.find({'id': userId, 'cate': 'bottom'})
+        outerList = db.ootd.find({'id': userId, 'cate': 'outer'})
+        shoesList = db.ootd.find({'id': userId, 'cate': 'shoes'})
+        faceOne = db.ootd.find_one({'id': userId})
+        lookList = db.look.find({'id': userId})
+        return render_template('main.html', loginUser=userId, top=topList, bottom=bottomList, outer=outerList, shoes=shoesList, face=faceOne, look=lookList)
     except jwt.ExpiredSignatureError:
         return render_template('main.html')
     except jwt.exceptions.DecodeError:
@@ -91,12 +98,12 @@ def addClothes():
     loginUser = request.form['userId']
 
     fileName = secure_filename(f.filename)
-    f.save(fileName)
+    f.save('./static/img/' + fileName)
 
     if(cate=='face'):
         originFile = db.ootd.find_one({'id': loginUser, 'cate': 'face'})
-        if(isfile(originFile['fileName'])):
-            os.remove(originFile['fileName'])
+        # if(isfile('/static/img/' + originFile['fileName'])):
+        #     os.remove('/static/img/' + originFile['fileName'])
         db.ootd.delete_many({'id': loginUser, 'cate': 'face'})
 
     image = {'id': loginUser, 'cate': cate, 'fileName': fileName}
