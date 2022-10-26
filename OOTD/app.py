@@ -21,7 +21,7 @@ def home():
     token_receive = request.cookies.get('jwToken')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        return render_template('index.html', loginUser=payload['id'])
+        return render_template('main.html', loginUser=payload['id'])
     except jwt.ExpiredSignatureError:
         return render_template('index.html')
     except jwt.exceptions.DecodeError:
@@ -75,7 +75,14 @@ def mainOotd():
 
 @app.route('/add.hs')
 def addPage():
-    return render_template('add.html')
+    token_receive = request.cookies.get('jwToken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        return render_template('add.html', loginUser=payload['id'])
+    except jwt.ExpiredSignatureError:
+        return render_template('index.html')
+    except jwt.exceptions.DecodeError:
+        return render_template('index.html')
 
 @app.route('/addC.hs', methods = ['POST'])
 def addClothes():
@@ -95,7 +102,7 @@ def addClothes():
     image = {'id': loginUser, 'cate': cate, 'fileName': fileName}
     db.ootd.insert_one(image)
 
-    return redirect(url_for('addPage', code=1))
+    return redirect(url_for('mainOotd', code=1))
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)

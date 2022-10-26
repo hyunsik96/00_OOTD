@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 
     <style type="text/css">
         *{
@@ -21,6 +22,20 @@
         #mainTitle {
             text-align: center;
             margin: 50px;
+        }
+        #mainTitle:hover {
+            cursor: default;
+        }
+        table {
+        border-spacing: 10px;
+        border-collapse: separate;
+        width: 500px;
+        margin: 0 auto;
+        }
+        #subTitle{
+            text-align: center;
+            margin: 50px;
+            font-size: 20pt;
         }
     </style>
 </head>
@@ -60,38 +75,43 @@
     }
 </script>
     <div class="wrap">
-        <h1 class="title is-1" id="mainTitle">OOTD</h1>
+        <h1 onClick="location.href='/'" class="title is-1" id="mainTitle">OOTD</h1>
         
         
-    <table>
-        <form action="/registerUser" method="POST">
-            <thead>
-
-            <caption>회원가입</caption>
-
-            </thead>
-            <tbody>
-            <tr>
-               <td>아이디</td>
-                <td><input type="text" name="id" required></td>
-            </tr>
-            <tr>
-               <td>비밀번호</td>
-                <td><input type="password" id="userPw" name="pw" required></td>
-            </tr>
-            <tr>
-               <td>비밀번호 확인</td>
-                <td><input type="password" id="userPwChk" required></td>
-            </tr>
-
-            <tr>
-                <td colspan="2"><input type="submit" onclick="return test();" value="가입하기"></td>
-            </tr>
-            </tbody>
-
-
-        </form>
-    </table>
+        <table>
+            <form action="/registerUser" method="POST">
+                <thead>
+    
+                <p class="title is-2" id="subTitle">회원가입</p>
+    
+                </thead>
+                <tbody>
+                <div class="control">
+                    <tr>
+                        <td>아이디</td>
+                        <td><input class="input is-focused" type="text" name="id" required></td>
+                    </tr>
+                </div>
+                <div class="control">
+                    <tr>
+                        <td>비밀번호</td>
+                        <td><input class="input is-focused" type="password" id="userPw" name="pw" required></td>
+                    </tr>
+                </div>
+                <div class="control">
+                    <tr>
+                        <td>비밀번호 확인</td>
+                        <td><input class="input is-focused" type="password" id="userPwChk" required></td>
+                    </tr>
+                </div>
+                <tr>
+                    <td colspan="2"><input type="submit"  class="button is-link is-focused"  onclick="return test();" value="가입하기"></td>
+                </tr>
+                </tbody>
+    
+    
+            </form>
+        </table>
     <font id="chkNotice" size="2"></font>
 
     </div>
