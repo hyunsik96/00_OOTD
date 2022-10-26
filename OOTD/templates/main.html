@@ -9,6 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.0.1/jquery-confirm.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.0.1/jquery-confirm.min.js"></script>
     <style type="text/css">
         *{
             font-family: 'Noto Sans KR', sans-serif;
@@ -52,6 +54,9 @@
             margin-bottom: 100px;
             font-size: 20px;
         }
+        .jconfirm-box{
+            width: 400px;
+        }
     </style>
 </head>
 <body>
@@ -65,6 +70,78 @@
             $.removeCookie('jwToken', {path: '/'});
             alert('로그아웃 되었습니다.');
             window.location.href = '/';
+        }
+        function imageClickT(e){
+            $(e).attr('value');
+            $.confirm({
+                title: '',
+                content: '이미지 착용시 착용, 완전히 제거시 삭제를 클릭해주세요',
+                buttons: {
+                    착용: function () {
+                        location.href='/addLookT.hs?fn='+$(e).attr('value');
+                    },
+                    삭제: function () {
+                        location.href='/deleteLookT.hs?fn='+$(e).attr('value');
+                    },
+                    취소: function () {
+                        
+                    }
+                }
+            });
+        }
+        function imageClickB(e){
+            $(e).attr('value');
+            $.confirm({
+                title: '',
+                content: '이미지 착용시 착용, 완전히 제거시 삭제를 클릭해주세요',
+                buttons: {
+                    착용: function () {
+                        location.href='/addLookB.hs?fn='+$(e).attr('value');
+                    },
+                    삭제: function () {
+                        location.href='/deleteLookB.hs?fn='+$(e).attr('value');
+                    },
+                    취소: function () {
+                        
+                    }
+                }
+            });
+        }
+        function imageClickO(e){
+            $(e).attr('value');
+            $.confirm({
+                title: '',
+                content: '이미지 착용시 착용, 완전히 제거시 삭제를 클릭해주세요',
+                buttons: {
+                    착용: function () {
+                        location.href='/addLookO.hs?fn='+$(e).attr('value');
+                    },
+                    삭제: function () {
+                        location.href='/deleteLookO.hs?fn='+$(e).attr('value');
+                    },
+                    취소: function () {
+                        
+                    }
+                }
+            });
+        }
+        function imageClickS(e){
+            $(e).attr('value');
+            $.confirm({
+                title: '',
+                content: '이미지 착용시 착용, 완전히 제거시 삭제를 클릭해주세요',
+                buttons: {
+                    착용: function () {
+                        location.href='/addLookS.hs?fn='+$(e).attr('value');
+                    },
+                    삭제: function () {
+                        location.href='/deleteLookS.hs?fn='+$(e).attr('value');
+                    },
+                    취소: function () {
+                        
+                    }
+                }
+            });
         }
     </script>
     
@@ -93,59 +170,59 @@
                 <div class="column">
                 {% for x in top %}
                     <figure class="image is-128x128">
-                        <img src="../static/img/{{x['fileName']}}" value="{{x['fileName']}}">
+                        <img src="../static/img/{{x['fileName']}}" style="height: 128px; width: 128px;" value="{{x['fileName']}}" onClick="imageClickT(this);">
                     </figure>
                 {% endfor%}
                 </div>
                 <div class="column">
                 {% for x in bottom %}
                     <figure class="image is-128x128">
-                        <img src="../static/img/{{x['fileName']}}" value="{{x['fileName']}}">
+                        <img src="../static/img/{{x['fileName']}}" style="height: 128px; width: 128px;" value="{{x['fileName']}}" onClick="imageClickB(this);">
                     </figure>
                 {% endfor%}
                 </div>
                 <div class="column">
                 {% for x in outer %}
                     <figure class="image is-128x128">
-                        <img src="../static/img/{{x['fileName']}}" value="{{x['fileName']}}">
+                        <img src="../static/img/{{x['fileName']}}" style="height: 128px; width: 128px;" value="{{x['fileName']}}" onClick="imageClickO(this);">
                     </figure>
                 {% endfor%}
                 </div>
                 <div class="column">
                 {% for x in shoes %}
                     <figure class="image is-128x128">
-                        <img src="../static/img/{{x['fileName']}}" value="{{x['fileName']}}">
+                        <img src="../static/img/{{x['fileName']}}" style="height: 128px; width: 128px;" value="{{x['fileName']}}" onClick="imageClickS(this);">
                     </figure>
                 {% endfor%}
                 </div>
             </div>
         </div>
 
-        <div class="box" style="height: 950px;">
+        <div class="box" style="height: 950px; overflow: auto;">
             <div class="columns">
                 <div class="column">
 
                 </div>
                 <div class="column is-two-fifths">
-                    <div id="outfit">Outfit of Today</div>
-                    <figure class="image" style="width: 250px; height: 400px;">
-                        <img src="../static/img/{{look['outer']}}" onerror="this.src='../static/img/error.png';">
-                    </figure>
+                    <div id="outfit">Outfit Of The Day</div>
                     OUTER
+                    <figure class="image" style="width:250px; height:400px;">
+                        <img src="../static/img/{{o['fileName']}}" onerror="this.src='../static/img/error.png';">
+                    </figure>
                 </div>
                 <div class="column is-two-fifths">
                     FACE
                   <figure class="image is-128x128">
-                    <img class="is-rounded" src="../static/img/{{face['fileName']}}">
+                    <img class="is-rounded" style="height: 128px; width: 128px;" src="../static/img/{{face['fileName']}}" onerror="this.src='../static/img/error2.png';">
                   </figure>
                   <figure class="image" style="height: 250px; width: 250px;">
-                    <img src="../static/img/{{look['top']}}" onerror="this.src='../static/img/error.png';">
+                    <img src="../static/img/{{t['fileName']}}" style="height: 250px; width: 250px;" onerror="this.src='../static/img/error.png';">
                   </figure> TOP
                   <figure class="image" style="height: 250px; width: 250px;">
-                    <img src="../static/img/{{look['bottom']}}" onerror="this.src='../static/img/error.png';">
+                    <img src="../static/img/{{b['fileName']}}" style="height: 250px; width: 250px;" onerror="this.src='../static/img/error.png';">
                   </figure> BOTTOM
                   <figure class="image is-128x128">
-                    <img src="../static/img/{{look['shoes']}}" onerror="this.src='../static/img/error.png';">
+                    <img src="../static/img/{{s['fileName']}}" style="height: 128px; width: 128px;" onerror="this.src='../static/img/error.png';">
                   </figure> SHOES
                 </div>
                 <div class="column">
@@ -153,7 +230,7 @@
                 </div>
             </div>
         </div>
-
     </div>
+    <br><br>
 </body>
 </html>

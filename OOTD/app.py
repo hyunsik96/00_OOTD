@@ -1,15 +1,13 @@
-from distutils.debug import DEBUG
-from genericpath import isfile
 from flask import *
 from pymongo import MongoClient
 from werkzeug.utils import secure_filename
 from datetime import *
-import os
 import jwt
 import datetime
-
-
-client = MongoClient('localhost', 27017)
+import time
+import random
+client = MongoClient('mongodb://test:test@localhost',27017)
+# client = MongoClient('localhost', 27017)
 db = client.ootd
 
 app = Flask(__name__)
@@ -21,7 +19,7 @@ def home():
     token_receive = request.cookies.get('jwToken')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        return render_template('main.html', loginUser=payload['id'])
+        return redirect(url_for('mainOotd'))
     except jwt.ExpiredSignatureError:
         return render_template('index.html')
     except jwt.exceptions.DecodeError:
@@ -52,7 +50,7 @@ def login():
         if(db.user.find_one({'id': user_id})['pw']==user_pw):
             payload = {
             'id': user_id,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=3600)    #언제까지 유효한지
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=3600)
             }
 
             access_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
@@ -68,17 +66,142 @@ def mainOotd():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         userId = payload['id']
-        topList = db.ootd.find({'id': userId, 'cate': 'top'})
-        bottomList = db.ootd.find({'id': userId, 'cate': 'bottom'})
-        outerList = db.ootd.find({'id': userId, 'cate': 'outer'})
-        shoesList = db.ootd.find({'id': userId, 'cate': 'shoes'})
-        faceOne = db.ootd.find_one({'id': userId})
-        lookList = db.look.find({'id': userId})
-        return render_template('main.html', loginUser=userId, top=topList, bottom=bottomList, outer=outerList, shoes=shoesList, face=faceOne, look=lookList)
+        topList = db.ootd.find({'id': userId, 'cate': 'top'}).sort('_id', -1)
+        bottomList = db.ootd.find({'id': userId, 'cate': 'bottom'}).sort('_id', -1)
+        outerList = db.ootd.find({'id': userId, 'cate': 'outer'}).sort('_id', -1)
+        shoesList = db.ootd.find({'id': userId, 'cate': 'shoes'}).sort('_id', -1)
+        faceOne = db.ootd.find_one({'id': userId, 'cate': 'face'})
+
+        lookT = db.look.find_one({'id': userId, 'cate': 'top'})
+        lookB = db.look.find_one({'id': userId, 'cate': 'bottom'})
+        lookO = db.look.find_one({'id': userId, 'cate': 'outer'})
+        lookS = db.look.find_one({'id': userId, 'cate': 'shoes'})
+
+        return render_template('main.html', loginUser=userId, top=topList, bottom=bottomList, outer=outerList, shoes=shoesList, face=faceOne, t=lookT, b=lookB, o=lookO, s=lookS)
     except jwt.ExpiredSignatureError:
-        return render_template('main.html')
+        return render_template('index.html')
     except jwt.exceptions.DecodeError:
-        return render_template('main.html')
+        return render_template('index.html')
+
+@app.route('/deleteLookT.hs', methods= ['GET'])
+def deleteLookT():
+    token_receive = request.cookies.get('jwToken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        fileName = request.args.get('fn')
+        userId = payload['id']
+        db.ootd.delete_many({'id': userId, 'cate': 'top', 'fileName': fileName})
+        return redirect(url_for('mainOotd'))
+    except jwt.ExpiredSignatureError:
+        return render_template('index.html')
+    except jwt.exceptions.DecodeError:
+        return render_template('index.html')
+
+@app.route('/deleteLookB.hs', methods= ['GET'])
+def deleteLookB():
+    token_receive = request.cookies.get('jwToken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        fileName = request.args.get('fn')
+        userId = payload['id']
+        db.ootd.delete_many({'id': userId, 'cate': 'bottom', 'fileName': fileName})
+        return redirect(url_for('mainOotd'))
+    except jwt.ExpiredSignatureError:
+        return render_template('index.html')
+    except jwt.exceptions.DecodeError:
+        return render_template('index.html')
+
+@app.route('/deleteLookO.hs', methods= ['GET'])
+def deleteLookO():
+    token_receive = request.cookies.get('jwToken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        fileName = request.args.get('fn')
+        userId = payload['id']
+        db.ootd.delete_many({'id': userId, 'cate': 'outer', 'fileName': fileName})
+        return redirect(url_for('mainOotd'))
+    except jwt.ExpiredSignatureError:
+        return render_template('index.html')
+    except jwt.exceptions.DecodeError:
+        return render_template('index.html')
+
+@app.route('/deleteLookS.hs', methods= ['GET'])
+def deleteLookS():
+    token_receive = request.cookies.get('jwToken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        fileName = request.args.get('fn')
+        userId = payload['id']
+        db.ootd.delete_many({'id': userId, 'cate': 'shoes', 'fileName': fileName})
+        return redirect(url_for('mainOotd'))
+    except jwt.ExpiredSignatureError:
+        return render_template('index.html')
+    except jwt.exceptions.DecodeError:
+        return render_template('index.html')
+
+@app.route('/addLookT.hs', methods= ['GET'])
+def addLookT():
+    token_receive = request.cookies.get('jwToken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        fileName = request.args.get('fn')
+        nowLook = db.ootd.find_one({'fileName': fileName})
+        userId = payload['id']
+        db.look.delete_many({'id': userId, 'cate': 'top'})
+        db.look.insert_one({'id': userId, 'cate': 'top', 'fileName': fileName})
+        return redirect(url_for('mainOotd'))
+    except jwt.ExpiredSignatureError:
+        return render_template('index.html')
+    except jwt.exceptions.DecodeError:
+        return render_template('index.html')
+
+@app.route('/addLookB.hs', methods= ['GET'])
+def addLookB():
+    token_receive = request.cookies.get('jwToken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        fileName = request.args.get('fn')
+        nowLook = db.ootd.find_one({'fileName': fileName})
+        userId = payload['id']
+        db.look.delete_many({'id': userId, 'cate': 'bottom'})
+        db.look.insert_one({'id': userId, 'cate': 'bottom', 'fileName': fileName})
+        return redirect(url_for('mainOotd'))
+    except jwt.ExpiredSignatureError:
+        return render_template('index.html')
+    except jwt.exceptions.DecodeError:
+        return render_template('index.html')
+
+@app.route('/addLookO.hs', methods= ['GET'])
+def addLookO():
+    token_receive = request.cookies.get('jwToken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        fileName = request.args.get('fn')
+        nowLook = db.ootd.find_one({'fileName': fileName})
+        userId = payload['id']
+        db.look.delete_many({'id': userId, 'cate': 'outer'})
+        db.look.insert_one({'id': userId, 'cate': 'outer', 'fileName': fileName})
+        return redirect(url_for('mainOotd'))
+    except jwt.ExpiredSignatureError:
+        return render_template('index.html')
+    except jwt.exceptions.DecodeError:
+        return render_template('index.html')
+
+@app.route('/addLookS.hs', methods= ['GET'])
+def addLookS():
+    token_receive = request.cookies.get('jwToken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        fileName = request.args.get('fn')
+        nowLook = db.ootd.find_one({'fileName': fileName})
+        userId = payload['id']
+        db.look.delete_many({'id': userId, 'cate': 'shoes'})
+        db.look.insert_one({'id': userId, 'cate': 'shoes', 'fileName': fileName})
+        return redirect(url_for('mainOotd'))
+    except jwt.ExpiredSignatureError:
+        return render_template('index.html')
+    except jwt.exceptions.DecodeError:
+        return render_template('index.html')
 
 @app.route('/add.hs')
 def addPage():
@@ -96,9 +219,22 @@ def addClothes():
     f = request.files['file']
     cate = request.form['cate']
     loginUser = request.form['userId']
-
+    nowTime = time.strftime('%Y%m%d%H%M%S')
     fileName = secure_filename(f.filename)
-    f.save('./static/img/' + fileName)
+    if('.' in fileName):
+        f.save('./static/img/' + fileName)
+        if(cate=='face'):
+            originFile = db.ootd.find_one({'id': loginUser, 'cate': 'face'})
+            # if(isfile('/static/img/' + originFile['fileName'])):
+            #     os.remove('/static/img/' + originFile['fileName'])
+            db.ootd.delete_many({'id': loginUser, 'cate': 'face'})
+        image = {'id': loginUser, 'cate': cate, 'fileName': fileName}
+        db.ootd.insert_one(image)
+        return redirect(url_for('mainOotd', code=1))
+
+    ranInt = str(random.randint(1, 10))
+
+    f.save('./static/img/' + nowTime + ranInt + '.' + fileName)
 
     if(cate=='face'):
         originFile = db.ootd.find_one({'id': loginUser, 'cate': 'face'})
@@ -106,7 +242,7 @@ def addClothes():
         #     os.remove('/static/img/' + originFile['fileName'])
         db.ootd.delete_many({'id': loginUser, 'cate': 'face'})
 
-    image = {'id': loginUser, 'cate': cate, 'fileName': fileName}
+    image = {'id': loginUser, 'cate': cate, 'fileName': nowTime + ranInt + '.' + fileName}
     db.ootd.insert_one(image)
 
     return redirect(url_for('mainOotd', code=1))
