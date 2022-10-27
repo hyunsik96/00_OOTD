@@ -6,8 +6,8 @@ import jwt
 import datetime
 import time
 import random
-client = MongoClient('mongodb://test:test@localhost',27017)
-# client = MongoClient('localhost', 27017)
+# client = MongoClient('mongodb://test:test@localhost',27017)
+client = MongoClient('localhost', 27017)
 db = client.ootd
 
 app = Flask(__name__)
