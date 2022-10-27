@@ -6,8 +6,8 @@ import jwt
 import datetime
 import time
 import random
-# client = MongoClient('mongodb://test:test@localhost',27017)
-client = MongoClient('localhost', 27017)
+client = MongoClient('mongodb://test:test@localhost',27017)
+# client = MongoClient('localhost', 27017)
 db = client.ootd
 
 app = Flask(__name__)
@@ -27,18 +27,27 @@ def home():
 
 @app.route('/register')
 def registerPage():
-    return render_template('register.html')
+    token_receive = request.cookies.get('jwToken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        return redirect(url_for('mainOotd'))
+    except jwt.ExpiredSignatureError:
+        return render_template('register.html')
+    except jwt.exceptions.DecodeError:
+        return render_template('register.html')
 
-@app.route('/registerUser', methods = ['POST'])
+@app.route('/registerUser', methods = ['GET', 'POST'])
 def registerUser():
-
-    id = request.form['id']
-    pw = request.form['pw']
-    if(db.user.find_one({'id': id}) is not None):
-        return render_template('register.html', msg="중복된 아이디가 있습니다.")
-    else:
-        db.user.insert_one({'id': id, 'pw': pw})
-        return render_template('index.html', msg='회원가입 성공!')
+    try:
+        id = request.form['id']
+        pw = request.form['pw']
+        if(db.user.find_one({'id': id}) is not None):
+            return render_template('register.html', msg="중복된 아이디가 있습니다.")
+        else:
+            db.user.insert_one({'id': id, 'pw': pw})
+            return render_template('index.html', msg='회원가입 성공!')
+    except:
+        return redirect(url_for('home'))
 
 @app.route('/login.hs', methods = ['POST'])
 def login():
@@ -221,18 +230,17 @@ def addClothes():
     loginUser = request.form['userId']
     nowTime = time.strftime('%Y%m%d%H%M%S')
     fileName = secure_filename(f.filename)
+    ranInt = str(random.randint(1, 10000000000000000000000))
     if('.' in fileName):
-        f.save('./static/img/' + fileName)
+        f.save('./static/img/' + ranInt + '.' + fileName.split('.')[1])
         if(cate=='face'):
             originFile = db.ootd.find_one({'id': loginUser, 'cate': 'face'})
             # if(isfile('/static/img/' + originFile['fileName'])):
             #     os.remove('/static/img/' + originFile['fileName'])
             db.ootd.delete_many({'id': loginUser, 'cate': 'face'})
-        image = {'id': loginUser, 'cate': cate, 'fileName': fileName}
+        image = {'id': loginUser, 'cate': cate, 'fileName': ranInt + '.' + fileName.split('.')[1]}
         db.ootd.insert_one(image)
         return redirect(url_for('mainOotd', code=1))
-
-    ranInt = str(random.randint(1, 10))
 
     f.save('./static/img/' + nowTime + ranInt + '.' + fileName)
 
